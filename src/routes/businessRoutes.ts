@@ -9,7 +9,7 @@ const r = Router();
 r.use(requireAuth);
 
 r.post(
-  "/",
+  "/createBusiness",
   upload.fields([
     { name: "brellaCertificate", maxCount: 1 },
     { name: "businessLicense", maxCount: 1 },

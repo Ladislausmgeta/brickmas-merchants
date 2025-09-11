@@ -1,32 +1,21 @@
-import NodeClam from "clamscan";
+import { execFile } from "child_process";
 import path from "path";
 
-let clamscanInstance: any = null;
+export const scanFile = (filePath: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const clamPath = `"C:\Program Files\ClamAV"`; // adjust path
+    const absoluteFile = path.resolve(filePath);
 
-export async function getClamScan() {
-  if (clamscanInstance) return clamscanInstance;
-  clamscanInstance = await new NodeClam().init({
-    removeInfected: false,
-    clamdscan: {
-      socket: false,
-      host: process.env.CLAMD_HOST || "127.0.0.1",
-      port: Number(process.env.CLAMD_PORT || 3310),
-      timeout: 60000,
-    },
-    preference: "clamdscan",
+    execFile(clamPath, ["--infected", "--remove=no", absoluteFile], (err, stdout) => {
+      if (err) {
+        return reject(new Error(`ClamAV scan failed: ${err.message}`));
+      }
+
+      if (stdout.includes("Infected files: 0")) {
+        resolve();
+      } else {
+        reject(new Error(`File is infected: ${stdout}`));
+      }
+    });
   });
-  return clamscanInstance;
-}
-
-/**
- * Scans file at filePath. Throws error if infected or if ClamAV not reachable.
- */
-export async function scanFile(filePath: string) {
-  const clamscan = await getClamScan();
-  const res = await clamscan.isInfected(filePath);
-  // NodeClam returns object { isInfected, viruses }
-  if (res.isInfected) {
-    throw new Error(`File infected: ${res.viruses?.join?.(", ") || JSON.stringify(res.viruses)}`);
-  }
-  return true;
-}
+};
