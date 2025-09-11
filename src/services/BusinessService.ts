@@ -13,16 +13,21 @@ export class BusinessService {
   private async moveToPermanent(tmpPath: string) {
     const base = path.basename(tmpPath);
     const dest = path.join(PERM_DIR, base);
-    fs.renameSync(tmpPath, dest);
-    // return path relative to project root (for easy download)
+    await fs.promises.rename(tmpPath, dest);
     return path.join("uploads", "business", base).replace(/\\/g, "/");
   }
 
-  async createBusiness(data: any, files: any) {
-    // scan all uploaded files in tmp
+  async createBusiness(data: any, files?: { [key: string]: Express.Multer.File[] }) {
+    // scan all uploaded files
     if (files) {
       const fileList = Object.values(files).flat();
-      for (const f of fileList) await scanFile((f as { path: string }).path);
+      for (const f of fileList) {
+        try {
+          await scanFile(f.path);
+        } catch (err) {
+          console.warn("File scan failed or infected, skipping:", f.originalname, err);
+        }
+      }
     }
 
     const payload: any = { ...data };
@@ -35,23 +40,26 @@ export class BusinessService {
     return this.repo.save(ent);
   }
 
-  async updateBusiness(id: string, data: any, files: any) {
+  async updateBusiness(id: string, data: any, files?: { [key: string]: Express.Multer.File[] }) {
     const existing = await this.repo.findOneBy({ id });
     if (!existing) throw Object.assign(new Error("not_found"), { status: 404 });
-    // scan files
+
     if (files) {
       const fileList = Object.values(files).flat();
-      for (const f of fileList) await scanFile((f as { path: string }).path);
+      for (const f of fileList) {
+        try {
+          await scanFile(f.path);
+        } catch (err) {
+          console.warn("File scan failed or infected, skipping:", f.originalname, err);
+        }
+      }
     }
 
     if (files?.brellaCertificate) existing.brellaCertificate = await this.moveToPermanent(files.brellaCertificate[0].path);
     if (files?.businessLicense) existing.businessLicense = await this.moveToPermanent(files.businessLicense[0].path);
     if (files?.ownerNidaIdDoc) existing.ownerNidaIdDoc = await this.moveToPermanent(files.ownerNidaIdDoc[0].path);
 
-    // update only provided fields (optional)
-    const allowed = [
-      "name", "phone1", "phone2", "email", "tin", "ownerName", "ownerNidaId", "location", "supportContact"
-    ];
+    const allowed = ["name","phone1","phone2","email","tin","ownerName","ownerNidaId","location","supportContact"];
     for (const k of allowed) {
       if (Object.prototype.hasOwnProperty.call(data, k)) {
         // @ts-ignore
@@ -67,7 +75,6 @@ export class BusinessService {
   async suspend(id: string) { await this.repo.update(id, { isSuspended: true }); }
   async delete(id: string) { await this.repo.delete(id); }
 
-  // list/get
   async get(id: string) { return this.repo.findOneBy({ id }); }
   async list(filter?: { published?: boolean; suspended?: boolean }) {
     const qb = this.repo.createQueryBuilder("b");
