@@ -1,14 +1,19 @@
+import "reflect-metadata";
 import { DataSource } from "typeorm";
-import path from "path";
 import dotenv from "dotenv";
 dotenv.config();
 
-const dbType = process.env.DB_TYPE || "sqlite";
+const dbType = process.env.DB_TYPE;
 
 export const AppDataSource = new DataSource({
-  type: dbType as any,
-  database: process.env.DB_DATABASE ,
-  synchronize: true, // for dev only. Use migrations in production.
+  type: "mysql",
+  host: process.env.DB_HOST,
+  port: 3306,
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  synchronize: false,
   logging: false,
-  entities: [path.join(__dirname, "entities", "*.ts")],
+  entities: ["src/entities/**/*.ts"],
+  migrations: ["src/migrations/**/*.ts"],
 });
