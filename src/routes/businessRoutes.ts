@@ -19,7 +19,7 @@ r.post(
 );
 
 r.put(
-  "/:id",
+  "/updateUser/:id",
   upload.fields([
     { name: "brellaCertificate", maxCount: 1 },
     { name: "businessLicense", maxCount: 1 },
