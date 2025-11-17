@@ -19,7 +19,7 @@ r.post(
 );
 
 r.put(
-  "/updateUser/:id",
+  "/updateBusiness/:id",
   upload.fields([
     { name: "brellaCertificate", maxCount: 1 },
     { name: "businessLicense", maxCount: 1 },
@@ -29,12 +29,12 @@ r.put(
 );
 
 // actions
-r.post("/:id/publish", (req, res) => c.publish(req, res));
-r.post("/:id/unpublish", (req, res) => c.unpublish(req, res));
-r.post("/:id/suspend", (req, res) => c.suspend(req, res));
+r.post("/publish/:id", (req, res) => c.publish(req, res));
+r.post("/unpublish/:id", (req, res) => c.unpublish(req, res));
+r.post("/suspend/:id", (req, res) => c.suspend(req, res));
 
 // CRUD
-r.delete("/:id", (req, res) => c.delete(req, res));
+r.delete("/delete/:id", (req, res) => c.delete(req, res));
 r.get("/:id", (req, res) => c.get(req, res));
 r.get("/", (req, res) => c.list(req, res));
 

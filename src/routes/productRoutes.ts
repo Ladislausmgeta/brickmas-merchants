@@ -7,8 +7,8 @@ const c = new ProductController();
 
 r.use(requireAuth);
 
-r.post("/", (req, res) => c.create(req, res));
-r.put("/:id", (req, res) => c.update(req, res));
+r.post("/create", (req, res) => c.create(req, res));
+r.put("/update/:id", (req, res) => c.update(req, res));
 r.post("/:id/publish", (req, res) => c.publish(req, res));
 r.post("/:id/unpublish", (req, res) => c.unpublish(req, res));
 r.post("/:id/suspend", (req, res) => c.suspend(req, res));

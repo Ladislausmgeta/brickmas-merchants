@@ -18,6 +18,10 @@ export class BusinessService {
   }
 
   async createBusiness(data: any, files?: { [key: string]: Express.Multer.File[] }) {
+    const existingName = await this.repo.findOne({ where: { name: data.name } });
+    if (existingName) {
+      throw new Error(`Biashara yenye jina "${data.name}" tayari imesajiliwa.`);
+    }
     // scan all uploaded files
     if (files) {
       const fileList = Object.values(files).flat();
@@ -70,9 +74,9 @@ export class BusinessService {
     return this.repo.save(existing);
   }
 
-  async publish(id: string) { await this.repo.update(id, { isPublished: true }); }
+  async publish(id: string) { await this.repo.update(id, { isPublished: true ,isSuspended: false}); }
   async unpublish(id: string) { await this.repo.update(id, { isPublished: false }); }
-  async suspend(id: string) { await this.repo.update(id, { isSuspended: true }); }
+  async suspend(id: string) { await this.repo.update(id, { isSuspended: true ,isPublished: false }); }
   async delete(id: string) { await this.repo.delete(id); }
 
   async get(id: string) { return this.repo.findOneBy({ id }); }
