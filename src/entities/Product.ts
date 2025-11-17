@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn,Unique, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  Unique,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from "typeorm";
 
 @Entity("products")
 @Unique(["businessId", "name"])
@@ -27,9 +34,9 @@ export class Product {
   @Column({ type: "boolean", default: false })
   isSuspended!: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: "timestamp", precision: 6 })
   createdAt!: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: "timestamp", precision: 6 })
   updatedAt!: Date;
 }
