@@ -38,6 +38,7 @@ export class ProductService {
     const prod = await this.repo.findOneBy({ id });
     if (!prod) throw new Error("Not found");
     prod.isPublished = true;
+    prod.isSuspended = false;
     return this.repo.save(prod); // <-- updatedAt will update
   }
 
@@ -52,6 +53,7 @@ export class ProductService {
     const prod = await this.repo.findOneBy({ id });
     if (!prod) throw new Error("Not found");
     prod.isSuspended = true;
+    prod.isPublished = false;
     return this.repo.save(prod);
   }
   async delete(id: string) {

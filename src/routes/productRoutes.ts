@@ -9,9 +9,9 @@ r.use(requireAuth);
 
 r.post("/create", (req, res) => c.create(req, res));
 r.put("/update/:id", (req, res) => c.update(req, res));
-r.post("/:id/publish", (req, res) => c.publish(req, res));
-r.post("/:id/unpublish", (req, res) => c.unpublish(req, res));
-r.post("/:id/suspend", (req, res) => c.suspend(req, res));
+r.post("/publish/:id", (req, res) => c.publish(req, res));
+r.post("/unpublish/:id", (req, res) => c.unpublish(req, res));
+r.post("/suspend/:id", (req, res) => c.suspend(req, res));
 r.delete("/:id", (req, res) => c.delete(req, res));
 r.get("/:id", (req, res) => c.get(req, res));
 r.get("/", (req, res) => c.list(req, res));
