@@ -8,12 +8,17 @@ import { app } from "./app";
 const port = Number(process.env.PORT || 3001);
 
 async function main() {
-  await AppDataSource.initialize();
-  console.log("DB initialized");
-  app.listen(port, () => console.log(`Business API listening on :${port}`));
+  try {
+    await AppDataSource.initialize();
+    console.log("✅ Database connected");
+  } catch (err) {
+    console.error("❌ Failed to initialize database:", err);
+    process.exit(1); // stop server completely
+  }
+
+  app.listen(port, () => {
+    console.log(`🚀 API listening on port ${port}`);
+  });
 }
 
-main().catch((err) => {
-  console.error("Failed to start:", err);
-  process.exit(1);
-});
+main();

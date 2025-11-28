@@ -5,6 +5,7 @@ import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import businessRoutes from "./routes/businessRoutes";
 import productRoutes from "./routes/productRoutes";
+import orderRoutes from "./routes/OrderRoutes";
 
 export const app = express();
 
@@ -26,11 +27,13 @@ app.use(
 // routes
 app.use("/api/businesses", businessRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/orders", orderRoutes);
 
 // secure file download endpoint (requires auth middleware)
 import { requireAuth } from "./middleware/auth";
 import path from "path";
 import fs from "fs";
+import { Order } from "./entities/Order";
 
 app.get("/files/business/:filename", requireAuth, (req, res) => {
   const filename = String(req.params.filename);

@@ -10,18 +10,27 @@ export class BusinessController {
       return res.status(201).json(saved);
     } catch (err: any) {
       console.error("create error:", err);
-      return res.status(err.status || 400).json({ error: err.message || "create_failed" });
+      return res
+        .status(err.status || 400)
+        .json({ error: err.message || "create_failed" });
     }
   }
 
   async update(req: Request, res: Response) {
     try {
-      const updated = await svc.updateBusiness(req.params.id, req.body, (req as any).files);
+      const updated = await svc.updateBusiness(
+        req.params.id,
+        req.body,
+        (req as any).files
+      );
       return res.json(updated);
     } catch (err: any) {
       console.error("update error:", err);
-      if (err.message === "not_found") return res.status(404).json({ error: "not_found" });
-      return res.status(err.status || 400).json({ error: err.message || "update_failed" });
+      if (err.message === "not_found")
+        return res.status(404).json({ error: "not_found" });
+      return res
+        .status(err.status || 400)
+        .json({ error: err.message || "update_failed" });
     }
   }
 
@@ -48,8 +57,10 @@ export class BusinessController {
   }
   async list(req: Request, res: Response) {
     const filter: any = {};
-    if (req.query.published !== undefined) filter.published = req.query.published === "true";
-    if (req.query.suspended !== undefined) filter.suspended = req.query.suspended === "true";
+    if (req.query.published !== undefined)
+      filter.published = req.query.published === "true";
+    if (req.query.suspended !== undefined)
+      filter.suspended = req.query.suspended === "true";
     const list = await svc.list(filter);
     res.json(list);
   }

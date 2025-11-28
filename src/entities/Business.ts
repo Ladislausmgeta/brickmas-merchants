@@ -1,4 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+} from "typeorm";
+import { Product } from "./Product";
 
 @Entity("businesses")
 export class Business {
@@ -19,6 +27,9 @@ export class Business {
 
   @Column({ type: "varchar", length: 50, nullable: true })
   tin?: string;
+
+  @OneToMany(() => Product, (product) => product.business, { cascade: true })
+  products!: Product[];
 
   // stored relative path e.g. uploads/business/1234-abc.pdf
   @Column({ type: "varchar", length: 512, nullable: true })
